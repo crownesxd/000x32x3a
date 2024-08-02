@@ -1,0 +1,76 @@
+using namespace System.Collections.Generic
+using namespace System.ServiceProcess
+using namespace System.Diagnostics
+using namespace System.Runtime.InteropServices
+using namespace System.ComponentModel
+
+enum ServiceControllerExType {
+    Driver  = 0x1
+    Service = 0x2
+}
+
+class ServiceControllerEx {
+    [ServiceControllerExType] $Type
+    [string] $ServiceName
+    [string] $DisplayName
+    [string] $Description
+    [System.ServiceProcess.ServiceControllerStatus] $Status
+    [System.ServiceProcess.ServiceStartMode] [Nullable[bool]] $StartType
+    [Nullable[bool]] $DelayedAutoStart
+    [string] $UserName
+    [ServiceControllerEx[]] $RequiredServices
+    [ServiceControllerEx[]] $DependentServices
+    hidden [ServiceController[]] $scRequiredServices
+    hidden [ServiceController[]] $scDependentServices
+    [string] $Path
+    [bool] $CanPauseAndContinue
+    [bool] $CanShutdown
+    [bool] $CanStop
+    [string] $ErrorControl
+    hidden [Nullable[uint32]] $ProcessId
+    [Process] $Process
+    [SafeHandle] $ServiceHandle
+    [ISite] $Site
+    [IContainer] $Container
+    [Nullable[datetime]] $InstallDate
+    [Nullable[bool]] $DesktopInteract
+    [Win32Exception] $ExitCode
+    [Nullable[UInt32]] $ServiceSpecificExitCode
+    [Nullable[UInt32]] $TagId
+    [Nullable[uint32]] $CheckPoint
+    [Nullable[uint32]] $WaitHint
+    [string] $MachineName
+    [string] $HostName
+    [string] $HostDomain
+}
+
+class ServiceControllerExService : ServiceControllerEx {}
+class ServiceControllerExDriver : ServiceControllerEx {}
+
+function Get-ServiceEx {
+    [CmdletBinding(DefaultParameterSetName='ServiceName')]
+    param(
+        [Parameter(ParameterSetName='ServiceName', Position=0)]
+        [Parameter(ParameterSetName='ProcessId', Position=0)]
+        [Parameter(ParameterSetName='ProcessName', Position=0)]
+        [SupportsWildcards()]
+        [string[]]
+        $Name,
+
+        [Parameter(ParameterSetName='ProcessId')]
+        [uint32[]]
+        $ProcessId,
+
+        [Parameter(ParameterSetName='ProcessName')]
+        [SupportsWildcards()]
+        [string[]]
+        $ProcessName,
+
+        [Parameter()]
+        [ServiceControllerExType[]]
+        $Type = @('Service', 'Driver'),
+
+        [Parameter()]
+        [switch]
+    )
+}
