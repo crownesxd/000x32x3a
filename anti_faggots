@@ -1,0 +1,32 @@
+Clear-Host
+
+$system32Path = "$env:SystemRoot\System32"
+$desktopPath = [Environment]::GetFolderPath("Desktop")
+$downloadsPath = [System.IO.Path]::Combine($env:USERPROFILE, 'Downloads')
+
+$paths = @($system32Path, $desktopPath, $downloadsPath)
+
+$files = Get-ChildItem -Path $paths -File -Recurse -ErrorAction SilentlyContinue -Filter *.exe
+
+$results = @()
+
+foreach ($file in $files) {
+    try {
+        $signature = (Get-AuthenticodeSignature $file.FullName).Status
+    } catch {
+        $signature = "Unknown"
+    }
+
+    if ($signature -ne "Valid") {
+        $results += [PSCustomObject]@{
+            FilePath = $file.FullName
+            SignatureStatus = $signature
+        }
+    }
+}
+
+$results | Out-GridView -Title "Unsigned / Unknown Executables"
+
+while ($true) {
+    Start-Sleep -Seconds 1
+}
