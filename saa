@@ -16,4 +16,4 @@ $AppSwitchedPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Fea
 Get-ItemProperty -Path $AppSwitchedPath |
     findstr /i /C:":\" |
     Sort-Object LastWriteTime |
-    Out-GridView -PassThru -Title 'discord.gg/dvn'
+    Out-GridView -PassThru -Title 'discord.gg/inverse'
